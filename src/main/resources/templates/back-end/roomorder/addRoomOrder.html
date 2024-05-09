@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<base th:href="@{/}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>住宿訂單資料</title>
+
+<link th:insert="~{/back-end/htmlfile/css.html}" />
+
+
+<style type="text/css">
+
+</style>
+</head>
+<body>
+	<th:block th:insert="~{/back-end/htmlfile/content1}" />
+	<div class="container-fluid pt-4 px-4">
+		<div class="bg-light rounded">
+			<div class="G3_content">
+				<h4>新增住宿訂單</h4>
+   
+    <form action="#" th:action="@{/roomorder/insert}" method="post">
+        <p><label>會員電話：</label></p>
+        <input type="text" name="memberPhone"><br>
+
+        
+        <div><label>預定checkin日期：</label>
+        <span th:text="${roomOrder.checkindate}"></span>
+        <input type="hidden" name="checkInDate" th:value="${roomOrder.checkindate}">
+        </div>
+        <div><label>預定checkout日期：</label>
+        <span th:text="${roomOrder.checkoutdate}"></span>
+        <input type="hidden" name="checkOutDate" th:value="${roomOrder.checkoutdate}">
+        </div>
+
+
+        <div th:each="i : ${#numbers.sequence(1, roomOrder.paramCount)}">
+            <p>
+                <span th:each="roomType : ${roomTypeListData}" >
+					    <span class="roomTypeItem" th:if="${#strings.equals(i, roomType.roomTypeId)}">
+					        <label th:text="${roomType.roomTypeName}"></label>
+					    </span>
+				</span>
+                <input type="hidden"  th:name="roomType+${i}" th:value="${i}">
+            </p>
+            <p><label>間數</label></p>
+            <select th:name="roomAmount+${i}" >
+<!--                 <option value="">選取間數</option> -->
+<!--                 <option th:text="${roomOrder.__${'minEmptyRooms' + i}__}"></option> -->
+                <option th:if="${#strings.equals(0, roomOrder.__${'minEmptyRooms' + i}__)}" th:value="0">此時間區間無足夠空房可預訂</option>
+                <option th:unless="${#strings.equals(0, roomOrder.__${'minEmptyRooms' + i}__)}"
+                        th:each="roomCount : ${#numbers.sequence(0, roomOrder.__${'minEmptyRooms' + i}__)}"
+                        th:value="${roomCount}" th:text="${roomCount + '間'}"></option>
+            </select>
+        </div>
+        
+        <p><label>特殊需求</label></p>
+        <textarea name="specialreq" rows="10" cols="50">請輸入訂單特殊需求</textarea>
+        
+        <p><input type="submit" value="送出"></p>
+       
+    </form>
+
+				<a th:href="@{/roomorder/roomorderselect}">回住宿訂單首頁</a>
+			</div>
+		</div>
+	</div>
+	<th:block th:insert="~{/back-end/htmlfile/content2}" />
+	<th:block th:insert="~{/back-end/htmlfile/script}" />
+
+	<script type="text/javascript">
+	
+		
+		
+		
+		
+		
+	</script>
+</body>
+</html>

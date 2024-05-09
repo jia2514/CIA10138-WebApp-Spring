@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<base th:href="@{/}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>住宿訂單資料</title>
+
+<link th:insert="~{/back-end/htmlfile/css.html}" />
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<!-- ●●js  for jquery datatables 用 -->
+<script
+	src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<!-- ●●js  for jquery datatables 用 -->
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.13.5/css/dataTables.jqueryui.min.css" />
+<!-- ●●css for jquery datatables 用 -->
+
+<!-- ●● jquery datatables 設定 -->
+
+
+<style type="text/css">
+h1 {
+	margin-top: 0; /* 移除标题顶部间距 */
+	margin-bottom: 20px; /* 添加标题底部间距 */
+}
+
+table {
+	width: 100%; /* 表格宽度填满父容器 */
+	text-align: center; /* 居中对齐表格内容 */
+	margin-top: 20px; /* 表格顶部间距 */
+	border-collapse: collapse; /* 合并表格边框 */
+}
+
+th, td {
+	padding: 10px; /* 单元格内边距 */
+	border: 1px solid #dddddd; /* 单元格边框 */
+}
+
+th {
+	background-color: #0056b3; /* 表头背景颜色 */
+	color: white; /* 表头文字颜色 */
+}
+
+th:nth-child(1), td:nth-child(1) {
+	width: 10%; /* 调整订单编号列宽度 */
+}
+
+th:nth-child(2), td:nth-child(2) {
+	width: 10%; /* 调整会员姓名列宽度 */
+}
+
+th:nth-child(3), td:nth-child(3) {
+	width: 15%; /* 调整订单成立日期时间列宽度 */
+}
+
+th:nth-child(4), td:nth-child(4) {
+	width: 10%; /* 调整付款金额列宽度 */
+}
+
+th:nth-child(5), td:nth-child(5) {
+	width: 12%; /* 调整check in 日期列宽度 */
+}
+
+th:nth-child(6), td:nth-child(6) {
+	width: 12%; /* 调整check out 日期列宽度 */
+}
+
+th:nth-child(7), td:nth-child(7) {
+	width: 10%; /* 调整订单状态列宽度 */
+}
+
+th:nth-child(8), td:nth-child(8) {
+	width: 10%; /* 调整退款状态列宽度 */
+}
+
+th {
+	background-color: #004080; /* 深蓝色表头背景 */
+	color: white; /* 表头文字颜色 */
+}
+
+tr:nth-child(even) {
+	background-color: #f2f2f2; /* 偶数行背景颜色 */
+}
+
+a {
+	text-decoration: none; /* 移除链接下划线 */
+	color: #007bff; /* 链接颜色 */
+}
+
+a:hover {
+	text-decoration: underline; /* 鼠标悬停时添加下划线 */
+}
+
+input[type="submit"] {
+	background-color: #007bff; /* 浅蓝色按钮背景颜色 */
+	color: #ffffff; /* 按钮文字颜色 */
+	border: none; /* 移除按钮边框 */
+	border-radius: 5px; /* 圆角按钮 */
+	padding: 8px 16px; /* 按钮内边距 */
+	cursor: pointer; /* 鼠标悬停时显示手型 */
+}
+
+input[type="submit"]:hover {
+	background-color: #4d94ff; /* 鼠标悬停时按钮背景颜色 */
+}
+</style>
+</head>
+<body>
+	<th:block th:insert="~{/back-end/htmlfile/content1}" />
+	<div class="container-fluid pt-4 px-4">
+		<div class="bg-light rounded">
+			<div class="G3_content">
+				<div align="center">
+					<h2>住宿訂單資料</h2>
+				</div>
+
+				<table>
+					<thead>
+						<tr>
+							<th>訂單編號</th>
+							<th>會員姓名</th>
+							<th>訂單成立日期時間</th>
+							<th>付款金額</th>
+							<th>check in 日期</th>
+							<th>check out 日期</th>
+							<th>訂單狀態</th>
+							<th>退款狀態</th>
+							<th>訂單狀態更新</th>
+						</tr>
+					</thead>
+					<tbody>
+    <tr th:each="roomOrder, iterStat : ${roomOrderList}" th:class="'order_' + ${roomOrder.roomOrderId}">
+        <td th:text="${roomOrder.roomOrderId}"></td>
+        <td th:text="${roomOrder.member.memberName}"></td>
+        <td th:text="${roomOrder.orderDate}"></td>
+        <td><b th:text="${#aggregates.sum(roomOrder.roomOrderItems.![roomPrice])}" /></td>
+        <td class="checkin" th:text="${roomOrder.checkInDate}"></td>
+        <td th:text="${roomOrder.checkOutDate}"></td>
+        <td class="order_state"><span th:switch="${roomOrder.roomOrderState}">
+            <span th:case="'0'">已取消</span>
+            <span th:case="'1'">成立</span>
+            <span th:case="'2'">完成</span>
+            <span th:case="'3'">取消中</span>
+        </span>
+<!--         <br th:if="${roomOrder.completeDateTime}"> -->
+<!-- 	        <span style="font-size: 10px;"> -->
+<!-- 	            <span th:text="${roomOrder.completeDateTime}"></span> -->
+<!-- 	        </span> -->
+    
+        </td>
+        <td class="refund_state"><span th:switch="${roomOrder.refundState}">
+            <span th:case="'0'">無退款</span>
+            <span th:case="'1'">退款中</span>
+            <span th:case="'2'">退款完成</span>
+        </span></td>
+        <td class="buttom_row"><span th:switch="${roomOrder.roomOrderState}">
+            <span th:case="'0' or ${roomOrder.roomOrderState} == '2'"></span>
+            <span th:case="'1'">
+                <form method="post" action="@{'/roomorder/getOneToCancel'}" style="margin-bottom: 0px;">
+                    <input class="room_order_cancel" type="submit" value="取消">
+                    <input type="hidden" name="roomOrderId" th:value="${roomOrder.roomOrderId}">
+                    <input type="hidden" name="checkInDate" th:value="${roomOrder.checkInDate}"> 
+                </form>
+            </span>
+            <span th:case="'3'">
+                <form method="post" action="@{'/roomorder/getOneToRefund'}" style="margin-bottom: 0px;">
+                    <input class="room_order_refund" type="submit" value="退款完成">
+                    <input type="hidden" name="roomOrderId" th:value="${roomOrder.roomOrderId}">
+                </form>
+            </span>
+        </span></td>
+    </tr>
+</tbody>
+				</table>
+				<a th:href="@{/roomorder/roomorderselect}">回住宿訂單首頁</a>
+			</div>
+		</div>
+	</div>
+	<th:block th:insert="~{/back-end/htmlfile/content2}" />
+	<th:block th:insert="~{/back-end/htmlfile/script}" />
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+	    $('.room_order_cancel').click(function(e) {
+	        e.preventDefault();
+	        var roomOrderId = $(this).siblings('input[name="roomOrderId"]').val();
+	        var checkInDate = $(this).siblings('input[name="checkInDate"]').val(); // 获取入住日期
+	        console.log(roomOrderId);
+	        console.log(checkInDate);
+	        // 解析入住日期
+	        var parts = checkInDate.split('-');
+	        var checkInDateObj = new Date(parts[0], parts[1] - 1, parts[2]); // 注意月份需要减1
+	        console.log(checkInDateObj);
+	        var today = new Date();
+	        var differenceInTime = checkInDateObj.getTime() - today.getTime();
+	        var differenceInDays = differenceInTime / (1000 * 3600 * 24);
+	        console.log(differenceInDays);
+	        if (differenceInDays <= 3) {
+	            alert("距離入住日期不足三天，無法退款。");
+	        } else {
+	            alert("請記得進行退款作業");
+	        }
+	        
+	            var formData = {
+	                roomOrderId: roomOrderId
+	            };
+
+
+	            var buttonRow = $(this).closest('tr').find('.buttom_row'); // 保存按钮行的引用
+				console.log(buttonRow);
+	            $.ajax({
+	                type: 'POST',
+	                url: '/roomorder/getOneToCancel',
+	                data: formData,
+	                success: function(roomOrder) {
+	                    
+	                    var orderStateText = '';
+	                    switch(roomOrder.roomOrderState) {
+	                        case 0:
+	                            orderStateText = '已取消';
+	                            buttonRow.empty(); // 清空按钮行
+	                            break;
+	                        case 3:
+	                            orderStateText = '取消中';
+	                            buttonRow.empty(); // 清空按钮行
+	                            var newForm = $('<form method="post" action="@{/roomorder/getOneToRefund}" style="margin-bottom: 0px;">' +
+	                                            '<input class="room_order_refund" type="submit" value="退款完成">' +
+	                                            '<input type="hidden" name="roomOrderId" value="' + roomOrderId + '">' +
+	                                            '</form>');
+	                            buttonRow.append(newForm); // 添加新的表单
+	                            console.log(roomOrderId);
+	                            console.log(newForm);
+	                            break;
+	                    }
+//	                     if(roomOrder.completeDateTime){
+//	                         orderStateText += '<br><span style="font-size: 10px;">' + roomOrder.completeDateTime + '</span>'; 
+//	                     }
+	                    
+	                    $('.order_' + roomOrder.roomOrderId + ' .order_state').text(orderStateText);
+	                    
+	                    var refundStateText = '';
+	                    switch(roomOrder.refundState) {
+	                        case 0:
+	                            refundStateText = '無退款';
+	                            break;
+	                        case 1:
+	                            refundStateText = '退款中';
+	                            break;
+	                    }
+	                    $('.order_' + roomOrder.roomOrderId + ' .refund_state').text(refundStateText);
+	                },
+	                error: function(xhr, status, error) {
+	                    console.error(error);
+	                }
+	            });
+	        
+	    });
+	});
+		
+		
+	$(document).ready(function() {
+	    $(document).on('click','.room_order_refund',function(e){
+		
+	        e.preventDefault();
+
+	        // 获取 roomOrderId
+	        var roomOrderId = $(this).siblings('input[name="roomOrderId"]').val();
+
+	        var formData = {
+	            roomOrderId: roomOrderId
+	        };
+
+
+            var buttonRow = $(this).closest('tr').find('.buttom_row'); // 保存按钮行的引用
+            console.log(buttonRow);
+            
+	        $.ajax({
+	            type: 'POST',
+	            url: '/roomorder/getOneToRefund',
+	            data: formData,
+	            success: function(roomOrder) {
+	                console.log(roomOrder);
+	                buttonRow.empty(); // 清空按钮行
+	                var orderStateText = '已取消';
+	                $('.order_' + roomOrder.roomOrderId + ' .order_state').text(orderStateText);
+	                
+	                var refundStateText = '退款完成';	              
+	                $('.order_' + roomOrder.roomOrderId + ' .refund_state').text(refundStateText);
+	                alert("請通知客戶已退款完成");
+	            },
+	            error: function(xhr, status, error) {
+	                console.error(error);
+	            }
+	        });
+	    });
+	});
+		
+		
+		
+		
+		
+	</script>
+</body>
+</html>
